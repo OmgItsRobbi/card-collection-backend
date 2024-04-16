@@ -1,0 +1,32 @@
+name: Build card_collection starter PROD
+
+on:
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+    concurrency:
+      group: ci-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build & push Docker image 🐳
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: card_collection
+          tags: ${{ github.event.release.tag_name }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          buildArgs: MIX_ENV=prod
+        env:
+          MIX_ENV: prod
