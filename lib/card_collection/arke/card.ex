@@ -11,8 +11,8 @@ defmodule CardCollection.Arke.Card do
   end
 
   ## Custom Functions
-  def my_function(:conn, :arke) do
-    IO.inspect(arke)
-    IO.inspect(unit)
-  end
+  # def my_function(:conn, :arke) do
+  #   IO.inspect(arke)
+  #   IO.inspect(unit)
+  # end
 end
