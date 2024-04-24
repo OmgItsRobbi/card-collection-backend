@@ -45,6 +45,7 @@ defmodule CardCollection.MixProject do
   end
 
   defp arke_deps(:prod), do: arke_package()
+
   defp arke_deps(_) do
     # Get arke's dependecies based on the env path. Also print a message only if the current command is mix deps.get
     env_var = System.get_env()
@@ -55,7 +56,11 @@ defmodule CardCollection.MixProject do
     local_deps =
       Enum.reduce(arke_env, [], fn {package_name, local_path}, acc ->
         if local_path !== "" do
-          parsed_name = String.replace(package_name, "EX_DEP_", "") |>  String.replace( "_PATH", "")|> String.downcase()
+          parsed_name =
+            String.replace(package_name, "EX_DEP_", "")
+            |> String.replace("_PATH", "")
+            |> String.downcase()
+
           IO.puts("#{IO.ANSI.cyan()} Using local #{parsed_name}#{IO.ANSI.reset()}")
           [{String.to_atom(parsed_name), path: local_path, override: true} | acc]
         else
@@ -73,13 +78,12 @@ defmodule CardCollection.MixProject do
 
   defp arke_package() do
     [
-      {:arke, github: "arkemishub/arke", branch: "feat/registry-file", override: true},
-      {:arke_postgres, github: "arkemishub/arke-postgres", branch: "feat/registry-file", override: true},
-      {:arke_auth, github: "arkemishub/arke-auth", branch: "feat/registry-file", override: true},
-      {:arke_server, github: "arkemishub/arke-server", branch: "feat/registry-file", override: true},
+      {:arke, "~> 0.3.0"},
+      {:arke_postgres, "~> 0.3.0"},
+      {:arke_auth, "~> 0.3.0"},
+      {:arke_server, "~> 0.3.0"}
     ]
   end
-
 
   # Aliases are shortcuts or tasks specific to the current project.
   # For example, to install project dependencies and perform other setup tasks, run:
@@ -91,7 +95,12 @@ defmodule CardCollection.MixProject do
     [
       setup: ["deps.get"],
       "arke.migrate": ["ecto.migrate -r ArkePostgres.Repo --prefix arke_system"],
-      "arke.init": ["ecto.create -r ArkePostgres.Repo","arke_postgres.create_project --id arke_system --label Arke System Project","ecto.migrate -r ArkePostgres.Repo --prefix arke_system", "arke.seed_project --project arke_system"]
+      "arke.init": [
+        "ecto.create -r ArkePostgres.Repo",
+        "arke_postgres.create_project --id arke_system --label Arke System Project",
+        "ecto.migrate -r ArkePostgres.Repo --prefix arke_system",
+        "arke.seed_project --project arke_system"
+      ]
     ]
   end
 end
